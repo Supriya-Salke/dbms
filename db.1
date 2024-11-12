@@ -1,0 +1,20 @@
+-- Creating the 'Department' table
+CREATE TABLE Department (
+ dept_id INT PRIMARY KEY, -- Primary key constraint
+ dept_name VARCHAR(50) NOT NULL, -- Not null constraint
+ location VARCHAR(100)
+);
+-- Creating the 'Employee' table with constraints
+CREATE TABLE Employee (
+ emp_id INT AUTO_INCREMENT PRIMARY KEY, -- Primary key with auto-increment
+ first_name VARCHAR(50) NOT NULL, -- Not null constraint
+ last_name VARCHAR(50) NOT NULL,
+ hire_date DATE NOT NULL,
+ salary DECIMAL(10, 2) CHECK (salary > 0), -- Check constraint on salary
+ dept_id INT, -- Foreign key reference
+ email VARCHAR(100) UNIQUE, -- Unique constraint on email
+ FOREIGN KEY (dept_id) REFERENCES Department(dept_id) -- Foreign key constraint
+);
+-- Create an index to speed up queries filtering by salary
+CREATE INDEX idx_salary ON Employee (salary);
+CREATE VIEW Emp AS SELECT * FROM Employee;
