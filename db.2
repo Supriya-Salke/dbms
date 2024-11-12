@@ -1,0 +1,24 @@
+1 .INSERT INTO Department (dept_id, dept_name, location)
+VALUES (1, 'Human Resources', 'New York'),(2, 'IT', 'San Francisco');
+
+2.SELECT * FROM Employee;
+
+3.SELECT first_name, last_name, salary FROM Employee WHERE salary > 60000;
+
+4.SELECT dept_id, AVG(salary) AS avg_salary FROM Employee GROUP BY dept_id;
+
+5.UPDATE Employee SET salary = 60000 WHERE emp_id = 1001;
+
+6.DELETE FROM Employee WHERE emp_id = 1002;
+
+7.SELECT first_name, last_name FROM Employee WHERE dept_id = (SELECT dept_id FROM
+Employee WHERE emp_id = 1001);
+
+8.SELECT first_name, last_name FROM Employee WHERE dept_id = 1 UNION SELECT
+first_name, last_name FROM Employee WHERE dept_id = 2;
+
+9.SELECT e.first_name, e.last_name, d.dept_name FROM Employee e LEFT JOIN Department d
+ON e.dept_id = d.dept_id;
+
+10.SELECT first_name, last_name FROM Employee WHERE dept_id = 1 INTERSECT SELECT
+first_name, last_name FROM Employee WHERE dept_id = 2; 
