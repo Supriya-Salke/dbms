@@ -1,0 +1,57 @@
+-- Create Products table
+CREATE TABLE Products (
+ ProductID INT PRIMARY KEY,
+ ProductName VARCHAR(255),
+ Price DECIMAL(10, 2),
+ Quantity INT
+);
+
+
+-- Create Product_Audit table to store audit records
+CREATE TABLE Product_Audit (
+ AuditID INT AUTO_INCREMENT PRIMARY KEY,
+ ProductID INT,
+ ProductName VARCHAR(255),
+ Price DECIMAL(10, 2),
+ Quantity INT,
+ Action VARCHAR(50), -- 'UPDATE' or 'DELETE'
+ Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+DELIMITER $$
+CREATE TRIGGER before_update_product
+BEFORE UPDATE ON Products
+FOR EACH ROW
+BEGIN
+ -- Insert the old record into the Product_Audit table before updating
+ INSERT INTO Product_Audit (ProductID, ProductName, Price, Quantity, Action)
+ VALUES (OLD.ProductID, OLD.ProductName, OLD.Price, OLD.Quantity, 'UPDATE');
+END $$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER before_delete_product
+BEFORE DELETE ON Products
+FOR EACH ROW
+BEGIN
+ -- Insert the old record into the Product_Audit table before deleting
+ INSERT INTO Product_Audit (ProductID, ProductName, Price, Quantity, Action)
+ VALUES (OLD.ProductID, OLD.ProductName, OLD.Price, OLD.Quantity, 'DELETE');
+END $$
+DELIMITER ;
+
+-- Insert sample data into the Products table
+INSERT INTO Products (ProductID, ProductName, Price, Quantity)
+VALUES
+(101, 'Laptop', 799.99, 50),
+(102, 'Smartphone', 499.99, 100),
+(103, 'Headphones', 59.99, 200);
+-- Update the price and quantity of the Laptop
+UPDATE Products
+SET Price = 749.99, Quantity = 45
+WHERE ProductID = 101;
+-- Delete the Smartphone product
+DELETE FROM Products
+WHERE ProductID = 102;
+-- Check the Product_Audit table to view audit logs
+SELECT * FROM Product_Audit;
