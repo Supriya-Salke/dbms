@@ -1,0 +1,21 @@
+DELIMITER $$
+CREATE PROCEDURE CalculateCircleArea()
+BEGIN
+ DECLARE v_radius INT;
+ DECLARE v_area DECIMAL(10, 2);
+ -- Loop through radii from 5 to 9
+ SET v_radius = 5;
+ WHILE v_radius <= 9 DO
+ -- Calculate area of circle (Area = π * r^2)
+ SET v_area = ROUND(PI() * POWER(v_radius, 2), 2);
+ -- Insert the radius and area into the 'areas' table
+ INSERT INTO areas (radius, area)
+ VALUES (v_radius, v_area);
+ -- Increment the radius
+ SET v_radius = v_radius + 1;
+ END WHILE;
+END $$
+DELIMITER ;
+
+CREATE TABLE areas ( radius INT, area DECIMAL(10, 2) );
+CALL CalculateCircleArea();
