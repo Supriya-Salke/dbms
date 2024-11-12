@@ -1,0 +1,69 @@
+Step 1: Create the Tables (Assumed Structure)
+-- Create N_RollCall table
+CREATE TABLE N_RollCall (
+ RollNo INT,
+ Name VARCHAR(100),
+ Status VARCHAR(20)
+);
+-- Create O_RollCall table
+CREATE TABLE O_RollCall (
+ RollNo INT PRIMARY KEY,
+ Name VARCHAR(100),
+ Status VARCHAR(20)
+);
+
+
+Step 2: PL/SQL Block Using a Parameterized Cursor
+DECLARE
+ -- Declare a parameterized cursor
+ CURSOR c_rollcall(p_status VARCHAR) IS
+ SELECT RollNo, Name, Status
+ FROM N_RollCall
+ WHERE Status = p_status;
+ -- Variables to store fetched data
+ v_rollno INT;
+ v_name VARCHAR(100);
+ v_status VARCHAR(20);
+BEGIN
+ -- Loop through different statuses
+ FOR status IN ('Present', 'Absent') LOOP
+ -- Open and fetch data using the cursor
+ OPEN c_rollcall(status);
+ -- Loop through all the rows returned by the cursor
+ LOOP
+ FETCH c_rollcall INTO v_rollno, v_name, v_status;
+ EXIT WHEN c_rollcall%NOTFOUND;
+ -- Check if the RollNo already exists in O_RollCall
+ BEGIN
+ -- If the RollNo does not exist, insert the data
+ INSERT INTO O_RollCall (RollNo, Name, Status)
+ SELECT v_rollno, v_name, v_status
+ WHERE NOT EXISTS (
+ SELECT 1 FROM O_RollCall WHERE RollNo = v_rollno
+ );
+ EXCEPTION
+ WHEN DUP_VAL_ON_INDEX THEN
+ -- If duplicate key error (for primary key constraint), skip the insertion
+ NULL; -- Do nothing, just continue
+ END;
+ END LOOP;
+ -- Close the cursor
+ CLOSE c_rollcall;
+ END LOOP;
+-- Commit the changes (optional, depending on your environment)
+ COMMIT;
+
+ 
+-- Insert sample data into N_RollCall
+INSERT INTO N_RollCall (RollNo, Name, Status)
+VALUES
+(1, 'Alice', 'Present'),
+(2, 'Bob', 'Absent'),
+(3, 'Charlie', 'Present'),
+(4, 'David', 'Absent'),
+(5, 'Eve', 'Present');
+
+
+Step 3: Check the O_RollCall Table After Running the PL/SQL Block
+-- Check data in O_RollCall
+SELECT * FROM O_RollCall;
