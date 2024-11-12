@@ -1,0 +1,72 @@
+Step 1: Create the Tables
+-- Create Stud_Marks table to store student marks
+CREATE TABLE Stud_Marks (
+ name VARCHAR(100),
+ total_marks INT
+);
+-- Create Result table to store the results
+CREATE TABLE Result (
+ Roll INT PRIMARY KEY AUTO_INCREMENT,
+ Name VARCHAR(100),
+ Class VARCHAR(50)
+);
+
+
+Step 2: Create the Stored Function get_grade
+DELIMITER $$
+CREATE FUNCTION get_grade(total_marks INT)
+RETURNS VARCHAR(50)
+DETERMINISTIC
+BEGIN
+ DECLARE grade VARCHAR(50);
+ IF total_marks >= 990 AND total_marks <= 1500 THEN
+ SET grade = 'Distinction';
+ ELSEIF total_marks >= 900 AND total_marks <= 989 THEN
+ SET grade = 'First Class';
+ ELSEIF total_marks >= 825 AND total_marks <= 899 THEN
+ SET grade = 'Higher Second Class';
+ ELSE
+ SET grade = 'Fail';
+ END IF;
+ RETURN grade;
+END $$
+DELIMITER ;
+
+
+Step 3: Create the Stored Procedure proc_Grade
+DELIMITER $$
+CREATE PROCEDURE proc_Grade(
+ IN student_name VARCHAR(100),
+ IN student_marks INT
+)
+BEGIN
+ DECLARE student_grade VARCHAR(50);
+ -- Get the grade using the get_grade function
+ SET student_grade = get_grade(student_marks);
+ -- Insert the result into the Result table
+ INSERT INTO Result (Name, Class)
+ VALUES (student_name, student_grade);
+
+END $$
+DELIMITER ;
+
+
+-- Insert sample data into Stud_Marks table
+INSERT INTO Stud_Marks (name, total_marks)
+VALUES
+('Alice', 1200),
+('Bob', 950),
+('Charlie', 850),
+('David', 800);
+
+
+Step 5: Execute the Procedure and Use the Function
+
+CALL proc_Grade('Alice', 1200); -- Should be Distinction
+CALL proc_Grade('Bob', 950); -- Should be First Class
+CALL proc_Grade('Charlie', 850); -- Should be Higher Second Class
+CALL proc_Grade('David', 800); -- Should be Fail (or custom category)
+
+-- Check the contents of the Result table
+SELECT * FROM Result;
+Cursors: (All types: I
