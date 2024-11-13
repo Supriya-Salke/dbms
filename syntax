@@ -1,0 +1,27 @@
+CREATE OR REPLACE PROCEDURE procedure_name (parameter_list) IS
+BEGIN
+    -- PL/SQL Logic
+END procedure_name;
+
+
+
+CREATE OR REPLACE FUNCTION function_name (parameter_list) RETURN return_type IS
+BEGIN
+    -- PL/SQL Logic
+    RETURN result;
+END function_name;
+
+
+
+CREATE OR REPLACE TRIGGER trigger_name
+{BEFORE | AFTER | INSTEAD OF} 
+{INSERT | UPDATE | DELETE} 
+ON table_name
+[FOR EACH ROW]
+DECLARE
+    -- Declaration section (optional)
+BEGIN
+    -- Trigger logic (code that will be executed)
+    NULL;  -- Default no-operation placeholder (optional)
+END;
+/
